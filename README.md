@@ -71,10 +71,10 @@ For more information about the Rijksmusem Challenge:
 
 The demo script extract FV and then run the Creator challenge. It obtains the following results
 
-Creator Challenge MCA:  | all   | 374   | 300   | 200   | 100 |
-------------------------|
-FV Kit demo             | 55.6  | 69.3  | 71.5  | 75.4  | 79.8|
-[mensink14icmr]         | 51.0  | 65.5  | 67.6  | 71.2  | 75.8|
+Creator Challenge MCA:  | all   | 374   | 300   | 200   | 100   |
+------------------------|-------|-------|-------|-------|-------|
+FV Kit demo             | 55.6  | 69.3  | 71.5  | 75.4  | 79.8
+[mensink14icmr]         | 51.0  | 65.5  | 67.6  | 71.2  | 75.8
 
 These differences are (likely) due to square rooting of SIFT features and the LNS encoding of projected features. The features used in [mensink14icmr] are available for download (see above)
 
