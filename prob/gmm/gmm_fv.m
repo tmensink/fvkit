@@ -18,9 +18,10 @@ function fv = gmm_fv(gmm,fvopts,fvinit,X,Msk)
     %       Jorge Sanchez - Florent Perronnin - Thomas Mensink - Jakob Verbeek
     %       Submitted to IJCV, january 2013
     %
-    % Written by Thomas Mensink
-    % January 2013, University of Amsterdam
-    % (c) 2013
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     %% If X is empty, return zero vector
     if isempty(X),                      fv      = zeros(fvopts.nrDim,1);  return;           end
@@ -79,7 +80,7 @@ function fv = gmm_fv(gmm,fvopts,fvinit,X,Msk)
         FVv = (M ./ S) .*Nv;
         fv  = [fv; FVv(:)];
     end
-        
+    
     iNrX = 1/nrX;
     fv   = fv * iNrX;
 end

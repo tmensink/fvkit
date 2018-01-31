@@ -1,4 +1,10 @@
 function lopts = llf_opts(lopts,enc)
+    % Set options for local features
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     if ~isfield(lopts,'feat'),        lopts.feat            = 'dsift';          end
     if ~isfield(lopts,'max_feat'),    lopts.max_feat        = 250;              end
@@ -13,7 +19,7 @@ function lopts = llf_opts(lopts,enc)
             if ~isfield(lopts.dsift,'max_pix'),lopts.dsift.max_pix  = 1e5;              end
             if ~isfield(lopts.dsift,'step'),  lopts.dsift.step      = 4;                end
             if ~isfield(lopts.dsift,'bin'),   lopts.dsift.bin       = 6;                end
-            if ~isfield(lopts.dsift,'scales'),lopts.dsift.scales    = 5;                end                        
+            if ~isfield(lopts.dsift,'scales'),lopts.dsift.scales    = 5;                end
             if ~isfield(lopts.dsift,'upscale'),lopts.dsift.upscale  = 1;                end
             if ~isfield(lopts.dsift,'smooth'),lopts.dsift.smooth    = 0;                end
             if ~isfield(lopts.dsift,'rszm'),  lopts.dsift.rszm      = 'bicubic';        end
@@ -30,40 +36,13 @@ function lopts = llf_opts(lopts,enc)
             
             if ~isfield(lopts.dsift,'root'),  lopts.dsift.root      = 1;                end
             if ~isfield(lopts.dsift,'out_dim'),lopts.dsift.out_dim  = 128;              end
-                        
+            
             % Define name, dir, and name
             name = sprintf('%s_%03dk_%ds%ds%db%du',lopts.dsift.type,ceil(lopts.dsift.max_pix/1000),lopts.dsift.scales,lopts.dsift.step,lopts.dsift.bin,lopts.dsift.upscale);
             
-            if lopts.dsift.root == 1,               name  = sprintf('%sroot',name);                   end            
-            if ~strcmp(lopts.dsift.rszm,'bicubic'), name  = sprintf('%s_%s',name,lopts.dsift.rszm);   end            
+            if lopts.dsift.root == 1,               name  = sprintf('%sroot',name);                   end
+            if ~strcmp(lopts.dsift.rszm,'bicubic'), name  = sprintf('%s_%s',name,lopts.dsift.rszm);   end
             lopts.dsift.name = name;
-            
-        case {'dt'},
-            if ~isfield(lopts,'dt'),          lopts.dt              = struct;           end
-            if ~isfield(lopts.dt,'dHog'),     lopts.dt.dHog         = 1;                end
-            if ~isfield(lopts.dt,'dHof'),     lopts.dt.dHof         = 0;                end
-            if ~isfield(lopts.dt,'dMBHx'),    lopts.dt.dMBHx        = 1;                end
-            if ~isfield(lopts.dt,'dMBHy'),    lopts.dt.dMBHy        = 1;                end
-            if ~isfield(lopts.dt,'out_dim'),  lopts.dt.out_dim      = 288;              end
-            if ~isfield(lopts.dt,'C'),        lopts.dt.C            = enc.imdb.str2inx; end
-            if ~isfield(lopts.dt,'mmap'),
-                lopts.dt.mmap = memmapfile([enc.path.dataset 'DT.bin'],'Writable',false,'Format',{'single',[436 enc.imdb.NrFeat],'DTfeat';'int64',[numel(lopts.dt.C)+1,1],'DTinx'});
-            end            
-            lopts.dt.name = sprintf('dt_%d%d%d%d',lopts.dt.dHog,lopts.dt.dHof,lopts.dt.dMBHx,lopts.dt.dMBHy);
-            
-        case {'fc2'}
-            
-            if ~isfield(lopts,'fc2'),         lopts.fc2             = struct;            end
-            if ~isfield(lopts.fc2,'out_dim'), lopts.fc2.out_dim     = 4096;                end
-            if ~isfield(lopts.fc2,'C'),       lopts.fc2.C           = enc.imdb.images.vidId;   end            
-            lopts.fc2.name = '';
-            
-        case {'mat'},
-            if ~isfield(lopts,'mat'),         lopts.mat             = struct;               end
-            if ~isfield(lopts.mat,'out_dim'), lopts.mat.out_dim     = 4096;                 end
-            if ~isfield(lopts.mat,'files'),   lopts.mat.files       = {'train.mat','test.mat','val.mat'}; end
-            if ~isfield(lopts.mat,'dir'),     lopts.mat.dir         = enc.path.dataset;     end
-            lopts.mat.name = '';
     end
     
     lopts.path = [enc.path.results lopts.feat '/' lopts.(lopts.feat).name];

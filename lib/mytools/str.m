@@ -5,8 +5,13 @@ function S = str(S,L,flag)
     %   S   String to display
     %   L   Length of string (default 25 characters)
     %   flag 1 = left, 2 = right, 3 = centered
+    %
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2009, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
-    % Thomas Mensink, 2009
     if nargin < 2 || isempty(L), L = 25; end
     if nargin < 3 || isempty(flag), flag = 1; end
     

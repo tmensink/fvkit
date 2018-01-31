@@ -1,4 +1,11 @@
 function fvo = gmm_fv_opts(fvo,enc)
+    % Set FV options
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
+
     if nargin < 1 || isempty(fvo),   fvo                    = struct;           end
     
     if ~isfield(fvo,'opts'),         fvo.opts               = struct;           end

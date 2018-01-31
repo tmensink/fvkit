@@ -1,5 +1,10 @@
 function gopts = gmm_opts(gopts,enc)
     % Sets default parameters used in GMM
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     if nargin < 1 || isempty(gopts),      gopts = struct;                       end
     

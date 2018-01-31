@@ -37,15 +37,16 @@ function gmm = gmm_splitem(X,~,gmmOpts)
     %
     % See also: gmm_em
     %
-    % Written by Thomas Mensink
-    % January 2013, University of Amsterdam
-    % (c) 2013
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     kMax        = gmmOpts.k;
     kMaxLog     = log2(kMax);
     assert(ceil(kMaxLog) == kMaxLog,'%s - Assumes that gmm.k is an exponent of 2 i.e. [2 8 16 32 64 ... 1024]',mfilename);
     KK          = cumprod(2*ones(1,kMaxLog));
-        
+    
     kBase       = [gmmOpts.path '/' gmmOpts.bname '_K%04d.mat'];
     
     M = []; C = []; W = []; Xs = [];
@@ -122,7 +123,7 @@ function gmm = gmm_splitem(X,~,gmmOpts)
             gmm.var     = C;
             gmm.weight  = W;
             gmm.k       = k;
-
+            
             gmm         = gmm_em(X,gmm,Xs);
             
             %% Print information

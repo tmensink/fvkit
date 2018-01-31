@@ -1,0 +1,8 @@
+% Data and results from PASCAL VOC 2007
+data/voc2007/results
+data/voc2007/VOCdevkit/VOC2007
+*.tar
+
+% Data and results from RMC
+data/rijks/results
+data/rijks/jpg2

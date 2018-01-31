@@ -1,14 +1,29 @@
-function fres = svm_kernel_train(encOpts,C,T)
-    if nargin < 2 || isempty(C),    C = logspace(-2,2,5);   end
-    if nargin < 3 || isempty(T),    T = 1;                  end
+function fres = svm_kernel_train(encOpts)
+    % Train (linear) kernel SVMs
+    %
+    % This files uses
+    %  - svmtrain
+    %  - svmpredict
+    % from the liblinear library (included in lib, see README).
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
+    
+    C   = encOpts.svm.C;
+    T   = encOpts.svm.test;
     fversion(.15);
     
     % This means we're going to do crossvalidation
     CV = numel(C) > 1;
     assert(all(mod(log10(C),1) == 0),'We assume C = {.01 .1 1 10 ...}');
-       
+    
     eval = encOpts.svm.eval;
     evalS= encOpts.svm.evalS;
+    
+    bpath = encOpts.svm.path;
+    bfile = sprintf('%s/kernelsvm',bpath);
     
     fprintf('%s | using %s (%s)\n',mfilename,evalS,eval);
     if CV == 1,
@@ -18,18 +33,18 @@ function fres = svm_kernel_train(encOpts,C,T)
         for c=1:numel(C),
             CC      = C(c);
             cname   = sprintf('CV_%5.0e',CC);
-            cvname  = enc_getName('kernel-file',encOpts,struct('name',cname));
-                        
+            cvname  = sprintf('%s_%s.mat',bfile,cname);
+            
             fprintf('Cross Validation using C %5.0e | %f \n',CC,CC);
             if exist(cvname,'file') ~= 2,
                 %% Load the train x train kernel, and the train x val kernel
                 if exist('Ktrain','var') ~= 1 || exist('Kval','var') ~= 1,
                     fprintf('\t --> Load Train and Val kernels\n');
-                    kName       = enc_getName('kernel-file',encOpts,struct('name','TRN2TRN'));
+                    kName       = sprintf('%s/kernel_TRN2TRN.mat',bpath);
                     Ktrain      = load(kName);
                     Ktrain.K    = double([(1:size(Ktrain.K))' Ktrain.K]);
                     
-                    kName       = enc_getName('kernel-file',encOpts,struct('name','VAL2TRN'));
+                    kName       = sprintf('%s/kernel_VAL2TRN.mat',bpath);
                     Kval        = load(kName);
                     Kval.K      = double([(1:size(Kval.K))' Kval.K]);
                     
@@ -55,17 +70,17 @@ function fres = svm_kernel_train(encOpts,C,T)
                     Yval  = double(ismember(Kval.Id,ClsId));   Yval(Yval == 0) = -1;     Yval   = Yval';
                     
                     % Learn SVM
-                    model           = svmtrain(Ytrain, Ktrain.K, sprintf('-t 4 -c %f -q',CC));
-                    [lab,acc,pred]  = svmpredict(Yval, Kval.K, model);
+                    model           = svmtrain(Ytrain, Ktrain.K, sprintf('-t 4 -c %f -q',CC)); %#ok<*SVMTRAIN>
+                    [~,~,pred]      = svmpredict(Yval, Kval.K, model);
                     if model.Label(1) == -1, pred = -1 * pred; end
                     
                     PP(:,ci) = pred;
                     GG(:,ci) = Yval;
                 end
                 fprintf('|done\n');
-                                
+                
                 [res.iap,res.nap,res.det]       = eval_map(PP,GG);
-                [res.clac, res.clai, res.cdet]  = eval_classacc(PP,GG);                
+                [res.clac, res.clai, res.cdet]  = eval_classacc(PP,GG);
                 save(cvname,'res')
             else
                 fprintf('\t\t--> load %s\n',cvname);
@@ -88,7 +103,7 @@ function fres = svm_kernel_train(encOpts,C,T)
     
     if T == 1,
         cname   = sprintf('test_%5.0e',Cbest);
-        cvname  = enc_getName('kernel-file',encOpts,struct('name',cname));
+        cvname  = sprintf('%s_%s.mat',bfile,cname);
         
         fprintf('Evaluate: using trainval and test, with C %5.0e | %f\n',Cbest,Cbest);
         
@@ -98,14 +113,14 @@ function fres = svm_kernel_train(encOpts,C,T)
             for f=1:numel(fnames), msk(f) = encOpts.imdb.sets.(fnames{f}) <= 0; end;
             fnames(msk) = [];
             
-            if ismember('VAL',fnames),                
+            if ismember('VAL',fnames),
                 %% Load the train x train kernel, and the train x val kernel
-                kName       = enc_getName('kernel-file',encOpts,struct('name','TRV2TRV'));
+                kName       = sprintf('%s/kernel_TRV2TRV.mat',bpath);
                 fprintf('\t--> Load Train Kernel: %s\n',kName);
                 Ktrain      = load(kName);
                 Ktrain.K    = double([(1:size(Ktrain.K))' Ktrain.K]);
                 
-                kName       = enc_getName('kernel-file',encOpts,struct('name','TST2TRV'));
+                kName       = sprintf('%s/kernel_TST2TRV.mat',bpath);
                 fprintf('\t--> Load Test Kernel: %s\n',kName);
                 Ktest       = load(kName);
                 Ktest.K     = double([(1:size(Ktest.K))' Ktest.K]);
@@ -116,19 +131,19 @@ function fres = svm_kernel_train(encOpts,C,T)
                     ImgId(encOpts.imdb.images.set == encOpts.imdb.sets.('VAL'))  ];
             else
                 %% Load the train x train kernel, and the train x val kernel
-                kName       = enc_getName('kernel-file',encOpts,struct('name','TRN2TRN'));
+                kName       = sprintf('%s/kernel_TRN2TRN.mat',bpath);
                 fprintf('\t--> Load Train Kernel: %s\n',kName);
                 Ktrain      = load(kName);
                 Ktrain.K    = double([(1:size(Ktrain.K))' Ktrain.K]);
                 
-                kName       = enc_getName('kernel-file',encOpts,struct('name','TST2TRN'));
+                kName       = sprintf('%s/kernel_TST2TRN.mat',bpath);
                 fprintf('\t--> Load Test Kernel: %s\n',kName);
                 Ktest       = load(kName);
                 Ktest.K     = double([(1:size(Ktest.K))' Ktest.K]);
                 
                 ImgId       = encOpts.imdb.images.id;
                 Ktest.Id    = ImgId(encOpts.imdb.images.set == encOpts.imdb.sets.('TEST'));
-                Ktrain.Id   = ImgId(encOpts.imdb.images.set == encOpts.imdb.sets.('TRAIN'));                
+                Ktrain.Id   = ImgId(encOpts.imdb.images.set == encOpts.imdb.sets.('TRAIN'));
             end
             
             %% Load the train data vector
@@ -147,23 +162,24 @@ function fres = svm_kernel_train(encOpts,C,T)
                 Ytest = double(ismember(Ktest.Id,ClsId));  Ytest(Ytest == 0) = -1;   Ytest  = Ytest';
                 
                 model           = svmtrain(Ytrain, Ktrain.K, sprintf('-t 4 -c %f -q',Cbest));
-                [lab,acc,pred]  = svmpredict(Ytest, Ktest.K, model);
+                [~,~,pred]      = svmpredict(Ytest, Ktest.K, model);
                 if model.Label(1) == -1, pred = -1 * pred; end
-               
+                
                 PP(:,ci) = pred;
-                GG(:,ci) = Ytest;                
+                GG(:,ci) = Ytest;
             end
             fprintf('|done\n');
             [res.iap,res.nap,res.det]           = eval_map(PP,GG);
-            [res.clac, res.clai, res.cdet]      = eval_classacc(PP,GG);                
+            [res.clac, res.clai, res.cdet]      = eval_classacc(PP,GG);
             save(cvname,'res')
         else
             fprintf('\t--> Load results\n');
             load(cvname)
         end
-        fprintf('\t--> Average over %d classes:',res.det.NrQ);        
+        
+        fprintf('\t--> Average over %d classes:',res.det.NrQ);
         f = fieldnames(res);
-        for i=1:numel(f), 
+        for i=1:numel(f),
             fname = f{i};
             fval  = res.(fname);
             if isempty(strfind(fname,'det')) && isnumeric(fval)
@@ -174,11 +190,11 @@ function fres = svm_kernel_train(encOpts,C,T)
         
         fres.tst.C  = Cbest;
         if isfield(res,'clac') && isfield(res,'clai'),
-          fres.tst.P  = [res.iap res.nap res.clac res.clai];
+            fres.tst.P  = [res.iap res.nap res.clac res.clai];
         else
-          fres.tst.P  = [res.iap res.nap];
+            fres.tst.P  = [res.iap res.nap];
         end
-        
+        fres.tst.str  = sprintf('LibSVM Kernel C%5.0e | %d classes | %s %6.2f',Cbest,res.det.NrQ,eval,res.(eval)*100);
         fres.tst.det= res.det;
     end
 end

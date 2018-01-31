@@ -16,18 +16,20 @@ function gmm = gmm_rnd_init(gmm,X)
     %
     % See also: gmm_em
     %
-    % Written by Thomas Mensink
-    % April 2013, University of Amsterdam
-    % (c) 2013
-       
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
+    
     % Setup a few variables
     var_flr     = gmm.params.VarFloor;
-    rs          = RandStream.create('mt19937ar','seed',gmm.params.Seed);    
-    d           = size(X,1);    
+    rs          = RandStream.create('mt19937ar','seed',gmm.params.Seed);
+    d           = size(X,1);
     a           = whos('X');
     ftype       = a.class;
     k           = gmm.k;
-
+    
     
     % Compute the range of X
     dmin        = min(X,[],2);
@@ -39,5 +41,5 @@ function gmm = gmm_rnd_init(gmm,X)
     M           = bsxfun(@times,M,drange);
     gmm.mean    = bsxfun(@plus,M,dmin);
     gmm.var     = repmat(max(drange.^2 * .1,var_flr),1,k);
-    gmm.weight  = normalize(ones(1,k,ftype));    
+    gmm.weight  = normalize(ones(1,k,ftype));
 end

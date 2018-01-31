@@ -1,5 +1,11 @@
-function [Xdesc, Xloc, Xnum, Xsize] = llf_extract(imglist,llfOpts,path)    
+function [Xdesc, Xloc, Xnum, Xsize] = llf_extract(imglist,llfOpts,path)
     %Encoder function -- extract low level features (default SIFT)
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
+    
     if nargin < 3 || isempty(path), path = [];  end
     
     if ~iscell(imglist),     % We extract features from a single image
@@ -27,17 +33,13 @@ function [Xdesc, Xloc, Xnum, Xsize] = llf_extract(imglist,llfOpts,path)
         switch llfOpts.feat
             case 'dsift'
                 [Iloc,Idesc,Isize] = llf_dsift(jpgfile,llfOpts.dsift);
-            case 'dt'
-                [Iloc,Idesc,Isize] = llf_read_dt(jpgfile,llfOpts.dt);
-            case 'fc2'
-                [Iloc,Idesc,Isize] = llf_read_fc2(jpgfile,llfOpts.fc2);
         end
         
         Iloc            = single(Iloc);
         Idesc           = single(Idesc);
         msk             = sum(Idesc,1) == 0;
         Inum            = [0; sum(msk); numel(msk)];
-                
+        
         if size(Idesc,2) == 0,      Inum(1) = 0;        return;             end
         
         if llfOpts.max_feat > 0,
@@ -53,7 +55,7 @@ function [Xdesc, Xloc, Xnum, Xsize] = llf_extract(imglist,llfOpts,path)
                 Idesc   = Idesc(:,perm);
                 Iloc    = Iloc( :,perm);
             end
-        end        
+        end
         Inum(1)         = int32(size(Iloc,2));
     end
     

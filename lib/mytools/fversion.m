@@ -1,6 +1,13 @@
 function s = fversion(v)
+    % Prints version of file
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
+
     if nargin < 1 || ~isnumeric(v), v = .01;        end
-    
+
     dbs = dbstack(1);
     if isempty(dbs),
         cfname = 'Matlab Command Window';

@@ -19,9 +19,10 @@ function [P, logl,S] = gmm_expectation(gmm,X,Xs,kConst,iC,MinvC)
     %
     % See also: gmm_precompute
     %
-    % Written by Thomas Mensink
-    % April 2013, University of Amsterdam
-    % (c) 2013
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     if nargin < 3 || isempty(Xs),       Xs      = X.^2;                     end
     if nargin < 6 || isempty(kConst) || isempty(iC) || isempty(MinvC),
@@ -34,6 +35,5 @@ function [P, logl,S] = gmm_expectation(gmm,X,Xs,kConst,iC,MinvC)
     
     % Normalize using the softmax function
     [P, logl] = softmax(S,1);
-    logl      = mean(logl);
-        
+    logl      = mean(logl);    
 end

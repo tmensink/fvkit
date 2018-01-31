@@ -1,4 +1,10 @@
 function hmm = gmm_hmm(Xdesc,Xloc,hopts)
+    % Hidden Markov GMM
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     NrD     = size(Xdesc,1);
     NrK     = hopts.k;

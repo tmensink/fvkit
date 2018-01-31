@@ -6,8 +6,12 @@ function [M, z] = normalize(A, dim)
     % [M, c] = normalise(A, dim)
     % If dim is specified, we normalise the specified dimension only,
     % otherwise we normalise the whole array.
-    
-    % (c) 2011, Jakob Verbeek
+    %
+    % Part of FVKit - initial release
+    % Copyright, 2011, Jakob Verbeek
+    % Copyright, 2013-2018
+    % Thomas Mensink, University of Amsterdam
+    % thomas.mensink@uva.nl
     
     if nargin<2;
         dim=0;
