@@ -1,0 +1,5 @@
+#Ensure that Matlab files are recognized correctly
+*.m linguist-language=matlab
+
+#Discard the lib path
+lib/* linguist-vendored
