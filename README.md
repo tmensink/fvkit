@@ -103,6 +103,5 @@ When using this code, please cite the following papers
 1. [sanchez13ijcv] **Sanchez et al.**, *The Fisher Vector: Theory and Practice*, **IJCV 2014** ([pdf](https://staff.fnwi.uva.nl/t.e.j.mensink/publications/sanchez13ijcv.pdf))
 
 
-## Copyright (2013-2018)
-Thomas Mensink, University of Amsterdam
-thomas.mensink@uva.nl
+### Copyright (2013-2018)
+Thomas Mensink, University of Amsterdam, thomas.mensink@uva.nl:
